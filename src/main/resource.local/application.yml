@@ -1,0 +1,44 @@
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://220.231.216.128:3306/ectriplog?useEncodingUnicode=true&zeroDateTimeBehavior=convertToNull&characterEncoding=utf-8&useOldAliasMetadataBehavior=true&allowMultiQueries=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password: Ectriptestdb2018
+    filters: stat,wall,log4j
+    dbcp2:
+      min-idle: 5
+      initial-size: 5
+      max-total: 30
+      max-wait-millis: 200
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+
+mybatis:
+  config-location: classpath:mybatis/mybatis.cfg.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-handlers-package: com.ectrip.EnumHandlers
+
+pagehelper:
+  dialect: com.github.pagehelper.dialect.helper.MySqlDialect
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+

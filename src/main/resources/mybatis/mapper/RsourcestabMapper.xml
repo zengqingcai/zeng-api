@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ectrip.mapper.RsourcestabMapper" >
+  <resultMap id="BaseResultMap" type="com.ectrip.model.Rsourcestab" >
+    <result column="rid" property="rid" jdbcType="INTEGER" />
+    <result column="employeeid" property="employeeid" jdbcType="INTEGER" />
+    <result column="byisuse" property="byisuse" jdbcType="INTEGER" />
+    <result column="sourcename" property="sourcename" jdbcType="VARCHAR" />
+    <result column="dtenddate" property="dtenddate" jdbcType="VARCHAR" />
+    <result column="dtmakedate" property="dtmakedate" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    rid, employeeid, byisuse,
+      sourcename, dtenddate, dtmakedate
+  </sql>
+
+
+  <insert id="insert" parameterType="com.ectrip.model.Rsourcestab" useGeneratedKeys="true" keyProperty="rid">
+    insert into rsourcestab (rid, employeeid, byisuse, 
+      sourcename, dtenddate, dtmakedate
+      )
+    values (#{rid,jdbcType=INTEGER}, #{employeeid,jdbcType=INTEGER}, #{byisuse,jdbcType=INTEGER}, 
+      #{sourcename,jdbcType=VARCHAR}, #{dtenddate,jdbcType=VARCHAR}, #{dtmakedate,jdbcType=VARCHAR}
+      )
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.ectrip.model.Rsourcestab" useGeneratedKeys="true" keyProperty="rid">
+    insert into rsourcestab
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="rid != null" >
+        rid,
+      </if>
+      <if test="employeeid != null" >
+        employeeid,
+      </if>
+      <if test="byisuse != null" >
+        byisuse,
+      </if>
+      <if test="sourcename != null" >
+        sourcename,
+      </if>
+      <if test="dtenddate != null" >
+        dtenddate,
+      </if>
+      <if test="dtmakedate != null" >
+        dtmakedate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="rid != null" >
+        #{rid,jdbcType=INTEGER},
+      </if>
+      <if test="employeeid != null" >
+        #{employeeid,jdbcType=INTEGER},
+      </if>
+      <if test="byisuse != null" >
+        #{byisuse,jdbcType=INTEGER},
+      </if>
+      <if test="sourcename != null" >
+        #{sourcename,jdbcType=VARCHAR},
+      </if>
+      <if test="dtenddate != null" >
+        #{dtenddate,jdbcType=VARCHAR},
+      </if>
+      <if test="dtmakedate != null" >
+        #{dtmakedate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <resultMap id="ResourceResultMap" type="com.ectrip.model.dto.ResourcesVO" >
+    <result column="rid" property="rid" jdbcType="INTEGER" />
+    <result column="employeeid" property="employeeid" jdbcType="INTEGER" />
+    <result column="semployeeid" property="semployeeid" jdbcType="INTEGER" />
+    <result column="empid" property="empid" jdbcType="VARCHAR" />
+    <result column="empname" property="empname" jdbcType="VARCHAR" />
+    <result column="sourcename" property="sourcename" jdbcType="VARCHAR" />
+    <result column="byisuse" property="byisuse" jdbcType="INTEGER" />
+  </resultMap>
+
+  <update id="editResource" parameterType="com.ectrip.model.Rsourcestab">
+    update rsourcestab set
+      rid= #{rid},
+      employeeid= #{employeeid},
+      byisuse= #{byisuse},
+      sourcename= #{sourcename},
+      dtenddate= #{dtenddate},
+      dtmakedate= #{dtmakedate}
+      where rid=#{rid}
+  </update>
+
+  <select id="queryResourcePage" parameterType="java.util.Map" resultMap="ResourceResultMap">
+    SELECT a.employeeid employeeid,a.semployeeid semployeeid,a.empid empid,
+                            a.empname empname,b.sourcename sourcename,b.byisuse byisuse
+    FROM employees a LEFT JOIN rsourcestab b ON a.employeeid = b.employeeid where a.sources='0'
+  </select>
+
+  <select id="getRsourcesByEmp" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+        r.rid rid, r.employeeid employeeid, r.byisuse byisuse,
+      r.sourcename sourcename,r.dtenddate dtenddate,r.dtmakedate dtmakedate,sys.pmva szsourcename
+    from rsourcestab r,sysparv5 sys where r.sourcename=sys.pmcd and sys.pmky='DJXT' and r.employeeid=#{employeeid}
+  </select>
+
+</mapper>

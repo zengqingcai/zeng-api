@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+
+    <style type="text/css">
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+    </style>
+
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+    <script type="text/javascript">
+        function empView(empid){
+            window.location.href = "/emp/empView/"+empid;
+        }
+        function empEdit(empid){
+            window.location.href = "/emp/empEdit/"+empid;
+        }
+        function empAudit(empid){
+            window.location.href = "/emp/empAudit/"+empid;
+        }
+        function empPassWordEdit(empid){
+            window.location.href = "/emp/empPassWordEdit/"+empid;
+        }
+        function editEmpRsource(empid) {
+            window.location.href = "/emp/editEmpRsource/"+empid;
+        }
+        function empDel(empid) {
+            $.ajax({
+                url:"/emp/empDel",
+                type:'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data:JSON.stringify({"employeeid":empid}),
+                async: true,
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert(data.description);
+                        location.reload();
+                    }else{
+                        alert("用户删除失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+        function blacklist(empid,type) {
+            var url;
+            if(type==1){
+                url="/emp/blackEmp";
+            }else{
+                url="/emp/cancelBlackEmp";
+            }
+            $.ajax({
+                url:url,
+                type:'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data:JSON.stringify({"employeeid":empid}),
+                async: true,
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert(data.description);
+                        location.reload();
+                    }else{
+                        alert("操作失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+
+
+    </script>
+</head>
+<body>
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">用户搜索</h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" action="#" th:action="@{/emp/empList}" th:object="${employees}" method="post">
+
+                <div class="form-group">
+                    <label for="emptype">用户类型</label>
+                    <select class="form-control" id="emptype" th:field="*{emptype}">
+                        <option value="99">全部</option>
+                        <option th:each="map:${emptypeList}"
+                                th:value="${map.key}"
+                                th:text="${map.value}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sources">来源类型</label>
+                    <select class="form-control" id="sources" th:field="*{sources}">
+                        <option value="">全部</option>
+                        <option th:each="map:${sourcesList}"
+                                th:value="${map.key}"
+                                th:text="${map.value}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="byisuse">用户状态</label>
+                    <select class="form-control" id="byisuse" th:field="*{byisuse}">
+                        <option value="99">全部</option>
+                        <option th:each="map:${byisuseList}"
+                                th:value="${map.key}"
+                                th:text="${map.value}"></option>
+                    </select>
+                </div>
+                <input th:value="${page.currentPage}" id="page_currentPage" type="hidden">
+                <input th:value="${page.pageSize}" id="page_pageSize" type="hidden">
+                <input th:value="${page.totals}" id="page_totals" type="hidden">
+                <input th:value="${page.pages}" id="page_pages" type="hidden">
+                <button type="submit" class="btn btn-primary"> 查 询</button>
+            </form>
+        </div>
+    </div>
+    <p class="panel panel-default">
+        <!-- Default panel contents -->
+        <!--<div class="panel-heading">用户集合-->
+            <!--<span th:text="${#lists.size(emplist)}" class="badge"></span></div>-->
+        <table id="emptable" class="table stripe table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>用户编号</th>
+                <th>上级账号</th>
+                <th>账号</th>
+                <th>用户姓名</th>
+                <th>用户类型</th>
+                <th>联系方式</th>
+                <th>用户状态</th>
+                <th>用户注册来源</th>
+                <th>企业编码</th>
+                <th>企业名称</th>
+                <th>企业地址</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="Employees:${emplist}">
+                <td>
+                    <p th:text="${Employees.employeeid}"></p>
+               </td>
+                <td>
+                    <p th:text="${Employees.sempid}"></p>
+                </td>
+                <td>
+                    <p th:text="${Employees.empid}"></p>
+                </td>
+                <td>
+                    <p th:text="${Employees.empname}"></p>
+                </td>
+                <td>
+                    <p th:if="${Employees.emptype eq 0}" >平台用户</p>
+                    <p th:if="${Employees.emptype eq 1}" >景区用户</p>
+                    <p th:if="${Employees.emptype eq 2}" >供应商</p>
+                    <p th:if="${Employees.emptype eq 3}" >分销商</p>
+                </td>
+                <td>
+                    <p th:text="${Employees.mobile}"></p>
+                </td>
+                <td>
+                    <p th:if="${Employees.byisuse eq 0}" ><span style="color:red">禁用</span></p>
+                    <p th:if="${Employees.byisuse eq 1}" ><span style="color:green">启用</span></p>
+                    <p th:if="${Employees.byisuse eq 2}" ><span style="color:black">黑名单</span></p>
+                    <p th:if="${Employees.byisuse eq 3}" ><span style="color:gray">需审核</span></p>
+                </td>
+                <td>
+                    <p th:if="${Employees.sources eq '0'}" >集成用户 [审核状态:<span th:if="${Employees.shbyisuse eq 0}" style="color:gray">待审核</span><span th:if="${Employees.shbyisuse eq 1}" style="color:green">审核通过</span><span th:if="${Employees.shbyisuse eq 2}" style="color:red">审核不通过</span>]</p>
+                    <p th:if="${Employees.sources eq '1'}" >SAAS</p>
+                    <p th:if="${Employees.sources eq '2'}" >支付桥</p>
+                    <p th:if="${Employees.sources eq '3'}" >整合营销</p>
+                </td>
+                <td>
+                    <p th:text="${Employees.companycode}"></p>
+                </td>
+                <td>
+                    <p th:text="${Employees.companyname}"></p>
+                </td>
+                <td>
+                    <p th:text="${Employees.addr}"></p>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success" th:onclick="|empView(${Employees.employeeid})|">查看</button>
+                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu" style="min-width: 120px; left: -10px; padding: 5px;">
+                            <li><label th:if="${(Employees.byisuse != 2) and (Employees.byisuse != 3)}"><input value="修改" type="button" class="btn btn-success" th:onclick="|empEdit(${Employees.employeeid})|"/></label></li>
+                            <li><label th:if="${(Employees.byisuse != 2) and (Employees.byisuse != 0) and (Employees.byisuse != 3)}"><input value="禁用" type="button" class="btn btn-success" th:onclick="|empDel(${Employees.employeeid})|"/></label></li>
+                            <li><label th:if="${(Employees.byisuse != 2) and (Employees.byisuse != 3)}"><input value="密码初始化" type="button" class="btn btn-success" th:onclick="|empPassWordEdit(${Employees.employeeid})|"/></label></li>
+                            <li><label th:if="${(Employees.byisuse != 2) and (Employees.byisuse != 3)}"><input value="加入黑名单" type="button" class="btn btn-success" th:onclick="|blacklist(${Employees.employeeid},1)|"/></label></li>
+                            <li><label th:if="${Employees.byisuse eq 2}">  |  <input value="取消黑名单" type="button" class="btn btn-success" th:onclick="|blacklist(${Employees.employeeid},2)|"/></label></li>
+                            <li><label th:if="${Employees.byisuse == 3 and Employees.sources=='0'}"><input value="审核" type="button" class="btn btn-success" th:onclick="|empAudit(${Employees.employeeid})|"/></label></li>
+                            <li><label th:if="${(Employees.byisuse != 2) and (Employees.byisuse != 3) and (Employees.sources=='0')}"><input value="通用系统" type="button" class="btn btn-success" th:onclick="|editEmpRsource(${Employees.employeeid})|"/></label></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li>
+
+                    <span>总条数：<span th:text="${page.totals}"></span>&nbsp;&nbsp;</span>
+                <span>总页数：<span th:text="${page.pages}"></span>&nbsp;&nbsp;</span>
+                <span>当前页码：<span th:text="${page.currentPage}"></span></span>
+
+            </li>
+            <li>
+                <a th:href="@{/emp/empList/(currentPage=1,pageSize=${page.pageSize} )}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;首页</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/emp/empList/(currentPage=${page.currentPage-1},pageSize=${page.pageSize} )}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;上一页</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/emp/empList/(currentPage=${page.currentPage+1},pageSize=${page.pageSize} )}" aria-label="Next">
+                    <span aria-hidden="true">下一页&raquo;</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/emp/empList/(currentPage=${page.pages},pageSize=${page.pageSize} )}" aria-label="Next">
+                    <span aria-hidden="true">尾页&raquo;</span>
+                </a>
+            </li>
+
+            <!--<li>-->
+                <!--&lt;!&ndash; 调整pageSize start &ndash;&gt;-->
+                <!--<div class="btn-group">-->
+                    <!--<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text=" '每页显示:' + ${page.pageSize}">-->
+                        <!--<span class="caret"></span>-->
+                    <!--</button>-->
+                    <!--<ul class="dropdown-menu">-->
+                        <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=5 )}">5</a></li>-->
+                        <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=20 )}">10</a></li>-->
+                        <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=50 )}">50</a></li>-->
+                        <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=100 )}">100</a></li>-->
+                        <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=500 )}">500</a></li>-->
+                    <!--</ul>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; 调整pageSize结束 &ndash;&gt;-->
+            <!--</li>-->
+        </ul>
+    </nav>
+    </div>
+</div>
+</body>
+</html>

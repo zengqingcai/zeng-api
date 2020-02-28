@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户日志表</title>
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+    <style type="text/css">
+        /*--S--时间段的选择样式*/
+        .form-group .label, .btns {
+            cursor: pointer;
+        }
+        /*--E--时间段的选择样式*/
+
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .label-list .label {
+            font-size: 125%;
+        }
+
+        .whiteSpace {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .wordBreak {
+            word-break: break-all;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        /*--E--文本详情的样式*/
+
+
+    </style>
+
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+    <script type="text/javascript">
+        function blacklist(empid,type) {
+            var url;
+            if(type==1){
+                url="/emp/blackEmp";
+            }else{
+                url="/emp/cancelBlackEmp";
+            }
+            $.ajax({
+                url:url,
+                type:'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data:JSON.stringify({"employeeid":empid}),
+                async: true,
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert("操作成功");
+                        location.reload();
+                    }else{
+                        alert("操作失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+
+
+    </script>
+</head>
+<body>
+<div class="main">
+    <p class="panel panel-default">
+        <!-- Default panel contents -->
+    <div class="panel-heading">用户集合
+        <span th:text="${#lists.size(logList)}" class="badge"></span></div>
+    <table id="emptable" class="table stripe table-bordered table-hover">
+        <thead>
+        <tr>
+            <td>日志id</td>
+            <td>操作用户</td>
+            <th>操作类型</th>
+            <th>操作前信息</th>
+            <th>操作后信息</th>
+            <th>操作时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="log:${logList}">
+            <td>
+                <p th:text="${log.logid}"></p>
+            </td>
+            <td>
+                <p th:text="${log.empname}"></p>
+            </td>
+            <td>
+                <p th:text="${log.logname}"></p>
+            </td>
+            <td>
+                <p th:text="${log.brief}"></p>
+            </td>
+            <td>
+                <p th:text="${log.note}"></p>
+            </td>
+            <td>
+                <p th:text="${log.logdatetime}" ></p>
+            </td>
+            <td>
+                <input value="删除日志" type="button" class="btn btn-success"/></label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li>
+
+                <span>总条数：<span th:text="${page.totals}"></span>&nbsp;&nbsp;</span>
+                <span>总页数：<span th:text="${page.pages}"></span>&nbsp;&nbsp;</span>
+                <span>当前页码：<span th:text="${page.currentPage}"></span></span>
+
+            </li>
+            <li>
+                <a th:href="@{/syslog/logList/(currentPage=1,pageSize=${page.pageSize} )}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;首页</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/syslog/logList/(currentPage=${page.currentPage-1},pageSize=${page.pageSize} )}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;上一页</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/syslog/logList/(currentPage=${page.currentPage+1},pageSize=${page.pageSize} )}" aria-label="Next">
+                    <span aria-hidden="true">下一页&raquo;</span>
+                </a>
+            </li>
+
+            <li>
+                <a th:href="@{/syslog/logList/(currentPage=${page.pages},pageSize=${page.pageSize} )}" aria-label="Next">
+                    <span aria-hidden="true">尾页&raquo;</span>
+                </a>
+            </li>
+
+            <!--<li>-->
+            <!--&lt;!&ndash; 调整pageSize start &ndash;&gt;-->
+            <!--<div class="btn-group">-->
+            <!--<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text=" '每页显示:' + ${page.pageSize}">-->
+            <!--<span class="caret"></span>-->
+            <!--</button>-->
+            <!--<ul class="dropdown-menu">-->
+            <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=5 )}">5</a></li>-->
+            <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=20 )}">10</a></li>-->
+            <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=50 )}">50</a></li>-->
+            <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=100 )}">100</a></li>-->
+            <!--<li><a th:href="@{/permission/applyList/(currentPage=${page.currentPage},pageSize=500 )}">500</a></li>-->
+            <!--</ul>-->
+            <!--</div>-->
+            <!--&lt;!&ndash; 调整pageSize结束 &ndash;&gt;-->
+            <!--</li>-->
+        </ul>
+    </nav>
+</div>
+</div>
+</body>
+</html>

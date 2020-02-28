@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true">
+    <property name="APP" value="${project.artifactId}"/>
+    <property name="LOG_HOME" value="/home/q/www/log"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %5p %c:%L] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/logs/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} %5p %c:%L] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="info" />
+    <logger name="org.springframework.beans" level="info" />
+    <logger name="com.ectrip.citytour.web.exception" level="all"/>
+    <logger name="com.ectrip.citytour.service.biz" level="error"/>
+
+    <root level="info">
+        <appender-ref ref="console" />
+        <appender-ref ref="file" />
+    </root>
+</configuration>

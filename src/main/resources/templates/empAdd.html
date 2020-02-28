@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>新增集成用户</title>
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+
+    <style type="text/css">
+      .form-group {
+        height: 30px;
+      }
+      .main {
+        width: 100%;
+        box-sizing: border-box;
+        min-width: 1200px;
+        padding: 20px;
+      }
+    </style>
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+    <script type="text/javascript">
+        function empAdd() {
+            $.ajax({
+                url:"/empApi/saveEmpByPlat",
+                type:"post",
+                dataType:"json",
+                contentType :"application/json",
+                data: JSON.stringify($('#myform').serializeObject()),
+                success:function(data){
+                    if(data.success==true){
+                        alert("保存成功");
+                        window.location.href = "/emp/empList";
+                    }else{
+                        alert("保存失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+
+        $.fn.serializeObject = function()
+        {
+            var o = {};
+            var a = this.serializeArray();
+            $.each(a, function() {
+                if (o[this.name] !== undefined) {
+                    if (!o[this.name].push) {
+                        o[this.name] = [o[this.name]];
+                    }
+                    o[this.name].push(this.value || '');
+                } else {
+                    o[this.name] = this.value || '';
+                }
+            });
+            return o;
+        };
+    </script>
+</head>
+<body>
+<div class="main">
+  <form id="myform" role="form" enctype="multipart/form-data" method="post">
+    <div class="panel panel-default">
+      <div class="panel-heading">新增用户</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">用户名</label>
+          <div class="col-sm-10">
+            <input class="form-control" name="empid" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">密码</label>
+          <div class="col-sm-10">
+            <input class="form-control"  name="empname" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">用户类型</label>
+          <div class="col-sm-10">
+            <div class="checkbox">
+              <label><input type="radio" value="0" name="emptype" checked/>&nbsp;平台用户&nbsp;</label>
+              <label><input type="radio" value="1" name="emptype"/>&nbsp;景区用户&nbsp;</label>
+              <label><input type="radio" value="2" name="emptype"/>&nbsp;供应商&nbsp;</label>
+              <label><input type="radio" value="3" name="emptype"/>&nbsp;分销商&nbsp;</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">企业名称</label>
+          <div class="col-sm-10">
+            <input class="form-control" name="companyname" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">企业地址</label>
+          <div class="col-sm-10">
+            <input class="form-control" name="addr" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">联系方式</label>
+          <div class="col-sm-10">
+            <input class="form-control" name="mobile" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">邮箱地址</label>
+          <div class="col-sm-10">
+            <input class="form-control" name="email" type="text">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">备注</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" name="sznote" style="width:300px;height:150px;"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <div style="text-align: center" class="col-sm-12">
+            <input value="保存" type="button" class="btn btn-success" th:onclick="|empAdd()|"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+</body>
+</html>

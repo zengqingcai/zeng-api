@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ectrip.mapper.SyslogMapper" >
+  <resultMap id="BaseResultMap" type="com.ectrip.model.Syslog" >
+    <result column="logid" property="logid" jdbcType="INTEGER" />
+    <result column="employeeid" property="employeeid" jdbcType="INTEGER" />
+    <result column="stlg" property="stlg" jdbcType="VARCHAR" />
+    <result column="brief" property="brief" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="logdatetime" property="logdatetime" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+
+    <resultMap id="ResultMap" type="com.ectrip.model.dto.SyslogVO" >
+        <result column="logid" property="logid" jdbcType="INTEGER" />
+        <result column="empname" property="empname" jdbcType="VARCHAR" />
+        <result column="logname" property="logname" jdbcType="VARCHAR" />
+        <result column="brief" property="brief" jdbcType="VARCHAR" />
+        <result column="note" property="note" jdbcType="VARCHAR" />
+        <result column="logdatetime" property="logdatetime" jdbcType="VARCHAR" />
+    </resultMap>
+
+  <select id="findPage" resultMap="ResultMap" parameterType="java.util.Map">
+      SELECT logid,c.empname empname,b.pmva logname,a.note note,a.brief brief,a.logdatetime logdatetime
+      FROM syslog a LEFT JOIN sysparv5 b ON a.stlg=b.pmcd
+      LEFT JOIN employees c ON a.employeeid=c.employeeid
+    WHERE 1= 1
+    <if test="note !=null and note !=''">
+       and note = #{note}
+    </if>
+  </select>
+
+
+
+  <insert id="insert" parameterType="com.ectrip.model.Syslog" useGeneratedKeys="true" keyProperty="logid">
+    insert into syslog (logid, employeeid, stlg, 
+      brief, note, logdatetime
+      )
+    values (#{logid,jdbcType=INTEGER}, #{employeeid,jdbcType=INTEGER}, #{stlg,jdbcType=VARCHAR}, 
+      #{brief,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, #{logdatetime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ectrip.model.Syslog" useGeneratedKeys="true" keyProperty="logid">
+    insert into syslog
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="logid != null" >
+        logid,
+      </if>
+      <if test="employeeid != null" >
+        employeeid,
+      </if>
+      <if test="stlg != null" >
+        stlg,
+      </if>
+      <if test="brief != null" >
+        brief,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="logdatetime != null" >
+        logdatetime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="logid != null" >
+        #{logid,jdbcType=INTEGER},
+      </if>
+      <if test="employeeid != null" >
+        #{employeeid,jdbcType=INTEGER},
+      </if>
+      <if test="stlg != null" >
+        #{stlg,jdbcType=VARCHAR},
+      </if>
+      <if test="brief != null" >
+        #{brief,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="logdatetime != null" >
+        #{logdatetime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

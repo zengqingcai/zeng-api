@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+    <link href="/Content/sidebar-menu/sidebar-menu.css" rel="stylesheet" />
+    <link href="/Content/ace/css/ace-rtl.min.css" rel="stylesheet" />
+    <link href="/Content/ace/css/ace-skins.min.css" rel="stylesheet" />
+    <link href="/Content/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="/css/bootstrap/bootstrap-tab.css" rel="stylesheet"/>
+    <style type="text/css">
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+    </style>
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+
+    <script src="/Content/sidebar-menu/sidebar-menu.js"></script>
+    <script src="/js/bootstrap/bootstrap-tab.js"></script>
+
+</head>
+<body>
+<div class="navbar navbar-default" id="navbar">
+    <div class="navbar-container" id="navbar-container">
+        <div class="navbar-header pull-left">
+            <a href="#" class="navbar-brand">
+                <small>
+                    <img style="width: 40px; height: 40px;" src="/images/logo.png" alt="鼎游信息用户集成"/>
+                    鼎游用户集成管理
+                </small>
+            </a>
+        </div>
+        <div class="navbar-header pull-right" role="navigation">
+            <ul class="nav ace-nav">
+
+                <li class="light-blue" style="height:50px;margin-right:-20px;">
+
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                        <img class="nav-user-photo" src="Content/ace/avatars/avatar2.png" alt="Admin's Photo" />
+                        <span class="user-info">
+                               <small>欢迎登录,</small>
+                               平台管理员
+                           </span>
+
+                        <i class="icon-caret-down"></i>
+                    </a>
+                    <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                        <li>
+                            <a href="#">
+                                <i class="icon-cog"></i>
+                                设置
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="icon-user"></i>
+                                个人资料
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="/loginout">
+                                <i class="icon-off"></i>
+                                退出
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+<div class="main-container" id="main-container">
+    <div class="main-container-inner">
+        <a class="menu-toggler" id="menu-toggler" href="#">
+            <span class="menu-text"></span>
+        </a>
+        <div class="sidebar" id="sidebar">
+            <ul class="nav nav-list" id="menu"></ul>
+            <div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="page-content">
+                <div class="row" style="margin-right:-20px;margin-left:-20px;">
+                    <div class="col-xs-12" style="padding-left:0px;padding-right:0px;">
+                        <ul class="nav-my-tab">
+                            <li class="leftbackward"><a href="#" >
+                              <i class="fa fa-backward fa-fw"></i></a>
+                            </li>
+                            <li class="middletab">
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="active"><a href="#Index" role="tab" data-toggle="tab">
+                                      <i class="fa fa-home fa-fw"></i>系统首页</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="rightforward"><a href="#">
+                              <i class="fa fa-forward fa-fw"></i></a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="Index" style="height:100%">
+                                <h2>欢迎进入用户集成系统</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+      <i class="fa double-angle-up fa-only"></i>
+    </a>
+</div>
+<script type="text/javascript">
+  //toastr.options.positionClass = 'toast-bottom-right';
+  $(function () {
+    $('#menu').sidebarMenu({
+      data: [{
+        id: '1',
+        text: '系统设置',
+        icon: 'fa fa-cog fa-fw',
+        url: '',
+        menus: [{
+          id: '11',
+          text: '系统参数',
+          icon: 'fa fa-pencil fa-fw',
+          url: '/sysparv5/list'
+        }]
+      }, {
+        id: '2',
+        text: '用户管理',
+        icon: 'fa fa-user-circle-o fa-fw',
+        url: '',
+        menus: [{
+          id: '21',
+          text: '用户列表',
+          icon: 'fa fa-group fa-fw',
+          url: '/emp/empList'
+        }, {
+          id: '22',
+          text: '用户注册',
+          icon: 'fa fa-user-o fa-fw',
+          url: '/emp/empAdd'
+        }]
+      }, {
+        id: '3',
+        text: '系统日志',
+        icon: 'fa fa-book fa-fw',
+        url: '',
+        menus: [{
+          id: '31',
+          text: '日志列表',
+          icon: 'fa fa-bug fa-fw',
+          url: '/syslog/logList'
+        }]
+      }]
+    });
+  });
+</script>
+<script src="/Content/ace/js/ace-extra.min.js"></script>
+<script src="/Content/ace/js/ace.min.js"></script>
+</body>
+</html>

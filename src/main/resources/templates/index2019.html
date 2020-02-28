@@ -1,0 +1,268 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>日志列表</title>
+
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+
+    <style type="text/css">
+        /*--S--时间段的选择样式*/
+        .form-group .label, .btns {
+            cursor: pointer;
+        }
+
+        /*--E--时间段的选择样式*/
+
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .label-list .label {
+            font-size: 125%;
+        }
+
+        .whiteSpace {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .wordBreak {
+            word-break: break-all;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        /*--E--文本详情的样式*/
+
+
+    </style>
+
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+
+    <script type="text/javascript">
+        function addClick() {
+            var _minWidth = $(window).width() * 0.6 //0.6为常量
+            $('.text-para').each(function () {
+                var _this = $(this)
+                var _lH = parseInt(_this.css('line-height'))
+                _this.parent().css({"height": _lH + "px", "width": _minWidth + "px"})
+                var str = _this.text()  //文本内容
+                var _lW = this.scrollWidth / str.length //获取字体宽度
+                var _num = Math.floor(_minWidth / _lW) //一排显示的文字数量
+
+                //文本的数量和默认一行能显示多个字符相比较
+                if (str.length > _num) {
+                    var _width = _minWidth - 100 // 100px为 [展开收起图标]的大小
+                    var _count = Math.floor(_width / _lW)
+                    _this.text(str.substring(0, _count)) //截取显示少量内容
+                    _this.css("width", _width + "px")
+
+                    //添加点击[展开]的事件
+                    var _span = _this.nextAll()
+                    _span.eq(0).click(function () {
+                        _this.parent().css({"height": _lH * Math.ceil(str.length / _count) + "px"})
+                        _this.text(str)
+                        _this.addClass("wordBreak")
+                        _this.removeClass("whiteSpace")
+
+                        $(this).addClass("hidden");
+                        $(this).next().removeClass("hidden");
+                    })
+
+                    //添加点击[收起]的事件
+                    _span.eq(1).click(function () {
+                        _this.parent().css({"height": _lH + "px"})
+                        _this.text(str.substring(0, _count))
+                        _this.removeClass("wordBreak")
+                        _this.addClass("whiteSpace")
+
+                        $(this).addClass("hidden");
+                        $(this).prev().removeClass("hidden");
+                    })
+                } else {
+                    _this.next().addClass("hidden");
+                }
+
+            })
+        }
+
+        $(function () {
+            <!-- DataTable 初始化 -->
+            $("#ectriplogTable").DataTable({
+                lengthChange: true,
+                paging: true,
+                language: {
+                    lengthMenu: "每页显示 _MENU_记录",
+                    zeroRecords: "没有匹配的数据",
+                    info: "第_PAGE_页/共 _PAGES_页 ( 共\_TOTAL\_条记录 )",
+                    infoEmpty: "没有符合条件的记录",
+                    infoFiltered: "(从 _MAX_条记录中过滤)",
+                    paginate: {"first": "首页 ", "last": "末页", "next": "下一页", "previous": "上一页"}
+                },
+                "rowCallback": addClick()
+            })
+
+            $("#startTime").datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                format: 'yyyy-MM-dd hh:mm:ss',
+                forceParse: 0
+            }).on('hide', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                var startTime = event.date;
+                $("#endTime").datetimepicker('setStartDate', startTime);
+                $("#endTime").val("");
+            });
+            $("#endTime").datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                format: 'yyyy-MM-dd hh:mm:ss',
+                forceParse: 0
+            }).on('hide', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                var endTime = event.date;
+                $("#startTime").datetimepicker('setEndDate', endTime);
+            });
+
+
+            //时间范围点击事件
+            $(".form-control-static .label").click(function () {
+                var _beforeTime = JSON.parse($(this).attr("beforeTime"))
+                $("#startTime")[0].value = moment().subtract(_beforeTime.val, _beforeTime.type).format('YYYY-MM-DD HH:mm:ss')
+                $("#endTime")[0].value = moment().format('YYYY-MM-DD HH:mm:ss')
+                $(".form-inline").submit();
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">日志搜索</h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" action="#" th:action="@{/system/list}" th:object="${ectripLogInputDto}" method="post">
+                <div class="form-group">
+                    <label for="exampleInputName1">日志类型</label>
+                    <select class="form-control" id="exampleInputName1" th:field="*{logType}">
+                        <option value="0">全部</option>
+                        <option th:each="logType:${logTypeList}"
+                                th:value="${logType.type}"
+                                th:text="${logType.name}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="startTime">开始时间</label>
+                    <input size="" class="form-control" type="text" th:field="*{startTime}" id="startTime" placeholder="选择开始时间"/>
+                </div>
+                <div class="form-group">
+                    <label for="endTime">截止时间</label>
+                    <input class="form-control" type="text" th:field="*{endTime}" id="endTime" placeholder="选择截止时间"/>
+                </div>
+                <div class="form-group">
+                    搜索：<input class="form-control" type="text" th:field="*{orderNumber}"/>
+                </div>
+                <div class="form-group">
+                    <div class="form-control-static label-list">
+                        <span class="label label-primary" beforeTime='{"type": "minutes","val": 15}'>最近15分钟</span>
+                        <span class="label label-success" beforeTime='{"type": "minutes","val": 30}'>最近30分钟</span>
+                        <span class="label label-info" beforeTime='{"type": "hours","val": 1}'>最近1小时</span>
+                        <span class="label label-warning" beforeTime='{"type": "days","val": 3}'>最近3天</span>
+                        <span class="label label-danger" beforeTime='{"type": "weeks","val": 1}'>最近1周</span></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn  btn-primary"> 查 询</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">搜索结果
+            <span th:text="${#lists.size(ectripLogList)}" class="badge"></span></div>
+        <table id="ectriplogTable" class="table stripe table-bordered table-hover">
+            <thead>
+            <tr>
+                <th width="20%">编号/类型／订单号</th>
+                <th>请求详情（方法／请求参数／返回参数）</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ectriplog:${ectripLogList}">
+                <td>
+                    <h3 th:text="'ID:'+${ectriplog.id}"></h3>
+
+                    <p th:text="'Type:'+${ectriplog.logType.name}"></p>
+
+                    <p th:text="'OrderID:'+${ectriplog.orderNumber}"></p>
+
+                    <p th:text="'CreateTime:'+${#dates.format(ectriplog.createTime, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                </td>
+                <td>
+
+                    <ul class="list-group">
+                        <li class="list-group-item  active" th:text="'Method:'+${ectriplog.requestMethod}">请求方法</li>
+                        <li class="list-group-item">
+                            <div class="list-group-item">
+                                <div class="badge" th:text="'Request:'+${#dates.format(ectriplog.requestTime, 'yyyy-MM-dd HH:mm:ss')}">请求时间</div>
+                                <div class="text" id="textWidth">
+                                    <div class="text-para fl whiteSpace" th:text="${ectriplog.requestParameter}">请求参数</div>
+                                    <div class="btns fl"><span class="detail-b label label-success"><span class="glyphicon glyphicon-chevron-down"></span> 展开</span></div>
+                                    <div class="btns fl hidden"><span class="detail-b label label-info"><span class="glyphicon glyphicon-chevron-up"></span> 收起</span></div>
+                                </div>
+                                <!--<span class="detail-b label label-success"><span class="glyphicon glyphicon-chevron-down"></span> 展开</span>
+                                <span class="detail-b label label-info"><span class="glyphicon glyphicon-chevron-up"></span> 收起</span>-->
+                            </div>
+                            <div class="list-group-item">
+                                <div class="badge" th:text="'Response:'+${#dates.format(ectriplog.responseTime, 'yyyy-MM-dd HH:mm:ss')}">返回时间</div>
+                                <div class="text">
+                                    <div class="text-para fl whiteSpace" th:text="${ectriplog.responseParameter}">接收参数</div>
+                                    <div class="btns fl"><span class="detail-b label label-success"><span class="glyphicon glyphicon-chevron-down"></span> 展开</span></div>
+                                    <div class="btns fl hidden"><span class="detail-b label label-info"><span class="glyphicon glyphicon-chevron-up"></span> 收起</span></div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </td>
+                <!--<td style="text-align: center;"><input value="查看详情 " type="button" class="btn btn-success" th:onclick="|ectriplogView(${ectriplog.id})|"/>-->
+                <!--</td>-->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

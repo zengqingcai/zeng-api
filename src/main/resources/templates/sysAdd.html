@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>系统参数列表</title>
+
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+
+    <style type="text/css">
+        /*--S--时间段的选择样式*/
+        .form-group .label, .btns {
+            cursor: pointer;
+        }
+
+        /*--E--时间段的选择样式*/
+
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .label-list .label {
+            font-size: 125%;
+        }
+
+        .whiteSpace {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .wordBreak {
+            word-break: break-all;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        /*--E--文本详情的样式*/
+
+
+    </style>
+
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+
+    <script type="text/javascript">
+        function addClick() {
+            var _minWidth = $(window).width() * 0.6 //0.6为常量
+            $('.text-para').each(function () {
+                var _this = $(this)
+                var _lH = parseInt(_this.css('line-height'))
+                _this.parent().css({"height": _lH + "px", "width": _minWidth + "px"})
+                var str = _this.text()  //文本内容
+                var _lW = this.scrollWidth / str.length //获取字体宽度
+                var _num = Math.floor(_minWidth / _lW) //一排显示的文字数量
+
+                //文本的数量和默认一行能显示多个字符相比较
+                if (str.length > _num) {
+                    var _width = _minWidth - 100 // 100px为 [展开收起图标]的大小
+                    var _count = Math.floor(_width / _lW)
+                    _this.text(str.substring(0, _count)) //截取显示少量内容
+                    _this.css("width", _width + "px")
+
+                    //添加点击[展开]的事件
+                    var _span = _this.nextAll()
+                    _span.eq(0).click(function () {
+                        _this.parent().css({"height": _lH * Math.ceil(str.length / _count) + "px"})
+                        _this.text(str)
+                        _this.addClass("wordBreak")
+                        _this.removeClass("whiteSpace")
+
+                        $(this).addClass("hidden");
+                        $(this).next().removeClass("hidden");
+                    })
+
+                    //添加点击[收起]的事件
+                    _span.eq(1).click(function () {
+                        _this.parent().css({"height": _lH + "px"})
+                        _this.text(str.substring(0, _count))
+                        _this.removeClass("wordBreak")
+                        _this.addClass("whiteSpace")
+
+                        $(this).addClass("hidden");
+                        $(this).prev().removeClass("hidden");
+                    })
+                } else {
+                    _this.next().addClass("hidden");
+                }
+
+            })
+        }
+
+        function sysSave() {
+            if($("input[name='pmky']").val()==""){
+                alert("参数KEY不能为空");
+                $("input[name='pmky']").focus();
+                return false;
+            }else{
+                if ($("#pmky").val()!=null && $("#pmky").val()!=""){
+                    var blen = 0;
+                    for(i=0; i<$("#pmky").val().length; i++) {
+                        if (($("#pmky").val().charCodeAt(i) & 0xff00) != 0) {
+                            blen ++;
+                        }
+                        blen ++;
+                    }
+                    if (/^[A-Z]+$/.test($("#pmky").val())&&blen==4){
+                    }else{
+                        alert("参数KEY只能为四个大写字母");
+                        $("input[name='pmky']").focus();
+                        return false;
+                    }
+                }
+            }
+            if($("input[name='pmcd']").val()==""){
+                alert("参数码不能为空");
+                $("input[name='pmcd']").focus();
+                return false;
+            }
+            if($("input[name='pmva']").val()==""){
+                alert("参数A不能为空");
+                $("input[name='pmva']").focus();
+                return false;
+            }
+            $.ajax({
+                url:"/sysparv5/add",
+                type:'post',
+                dataType: 'json',
+                data: $('#myform').serialize(),
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert("保存成功");
+                        window.location.href = "/sysparv5/list";
+                    }else{
+                        alert("保存失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="panel panel-default">
+    <form id="myform"
+          role="form" enctype="multipart/form-data" method="post">
+        <table class="table">
+            <tr align="left">
+                <td colspan="4">
+                    <div class="panel-title">系统参数信息</div>
+                    <div th:if="${systp ne '0'}">
+                        <input type="hidden"  name="pmky" th:value="${pmky}">
+                        <input type="hidden"  name="spmcd" th:value="${spmcd}">
+                        <input type="hidden"  name="systp" th:value="${systp}">
+                    </div>
+                </td>
+            </tr>
+
+            <tr align="center">
+                <td><label class="control-label">参数KEY:</label></td>
+                <td>
+                    <input class="form-control" id="pmky" name="pmky" th:if="${systp eq '0'}" type="text">
+                    <p th:if="${systp ne '0'}" th:text="${pmky}"></p>
+                </td>
+                <td><label class="control-label">参数码:</label></td>
+                <td><input type="text" class="form-control" name="pmcd" ></td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">参数级别:</label></td>
+                <td th:if="${systp eq '0'}">
+                    顶级<input type="hidden" class="form-control" name="systp" value="0">
+                </td>
+                <td th:if="${systp ne '0'}">
+                    <p th:text="${systp}"></p>
+                </td>
+                <td><label class="control-label">参数A:</label></td>
+                <td><input type="text" class="form-control" name="pmva"></td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">参数B:</label></td>
+                <td><input type="text" class="form-control" name="pmvb" ></td>
+                <td><label class="control-label">参数C:</label></td>
+                <td><input type="text" class="form-control" name="pmvc"></td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">参数D:</label></td>
+                <td><input type="text" class="form-control" name="pmvd"></td>
+                <td><label class="control-label">参数E:</label></td>
+                <td><input type="text" class="form-control" name="pmve"></td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">参数F:</label></td>
+                <td><input type="text" class="form-control" name="pmvf"></td>
+                <td><label class="control-label">整形备注A:</label></td>
+                <td align="left">
+                    <input name="isa" th:value="1" type="radio">1
+                    <input name="isa" th:value="0" type="radio">0
+                </td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">整形备注B:</label></td>
+                <td align="left">
+                    <input type="radio" th:value="1" name="isb">1
+                    <input name="isb" th:value="0" type="radio">0
+                </td>
+                <td><label class="control-label">整形备注C:</label></td>
+                <td align="left">
+                    <input name="isc" th:value="1" type="radio">1
+                    <input name="isc" th:value="0" type="radio">0
+                </td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">整形备注D:</label></td>
+                <td align="left">
+                    <input type="radio" th:value="1" name="isd">1
+                    <input name="isd" th:value="0" type="radio">0
+                </td>
+                <td><label class="control-label">整形备注E:</label></td>
+                <td align="left">
+                    <input name="ise" th:value="1" type="radio">1
+                    <input name="ise" th:value="0" type="radio">0
+                </td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">整形备注F:</label></td>
+                <td align="left">
+                    <input type="radio" th:value="1" name="isf">1
+                    <input name="isf" th:value="0" type="radio">0
+                </td>
+                <td><label class="control-label">是否启用:</label></td>
+                <td align="left">
+                    <input name="isvalue" th:value="0" type="radio" checked>禁用
+                    <input name="isvalue" th:value="1" type="radio">启用
+                </td>
+            </tr>
+            <tr align="center">
+                <td><label class="control-label">备注:</label></td>
+                <td><textarea class="form-control" rows="3"></textarea></td>
+                <td></td><td></td>
+            </tr>
+        </table>
+        <div class="panel-footer">
+            <div class="bg-default" align="center" style="padding: 8px;">
+                <input type="button" value="保存" class="btn btn-success btn-sm" onclick="sysSave()"/>
+                <input type="button" value="返回" class="btn btn-success btn-sm" onclick="window.history.go(-1)"/>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

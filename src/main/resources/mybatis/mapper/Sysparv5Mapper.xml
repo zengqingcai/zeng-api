@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ectrip.mapper.Sysparv5Mapper">
+    <resultMap id="BaseResultMap" type="com.ectrip.model.Sysparv5">
+        <result column="pmky" jdbcType="VARCHAR" property="pmky" />
+        <result column="pmcd" jdbcType="VARCHAR" property="pmcd" />
+        <result column="spmcd" jdbcType="VARCHAR" property="spmcd" />
+        <result column="systp" jdbcType="VARCHAR" property="systp" />
+        <result column="pmva" jdbcType="VARCHAR" property="pmva" />
+        <result column="pmvb" jdbcType="VARCHAR" property="pmvb" />
+        <result column="pmvc" jdbcType="VARCHAR" property="pmvc" />
+        <result column="pmvd" jdbcType="VARCHAR" property="pmvd" />
+        <result column="pmve" jdbcType="VARCHAR" property="pmve" />
+        <result column="pmvf" jdbcType="VARCHAR" property="pmvf" />
+        <result column="isa" jdbcType="INTEGER" property="isa" />
+        <result column="isb" jdbcType="INTEGER" property="isb" />
+        <result column="isc" jdbcType="INTEGER" property="isc" />
+        <result column="isd" jdbcType="INTEGER" property="isd" />
+        <result column="ise" jdbcType="INTEGER" property="ise" />
+        <result column="isf" jdbcType="INTEGER" property="isf" />
+        <result column="isvalue" jdbcType="INTEGER" property="isvalue" />
+        <result column="note" jdbcType="VARCHAR" property="note" />
+        <result column="dtmakedate" jdbcType="VARCHAR" property="dtmakedate" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    pmky, pmcd, spmcd,
+      systp, pmva, pmvb,
+      pmvc, pmvd, pmve,
+      pmvf, isa, isb,
+      isc, isd, ise,
+      isf, isvalue, note,
+      dtmakedate
+  </sql>
+    <select id="getSysparv5ByPage" resultMap="BaseResultMap" parameterType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from sysparv5
+        <where>
+            1=1
+            <if test="pmky==null and systp==null">
+                and systp=0
+            </if>
+            <if test="pmky!=null and pmky!=''">
+                    and pmky=#{pmky}
+            </if>
+            <if test="systp!=null and systp!=''">
+                    and systp=#{systp}
+            </if>
+            <if test="pmkys!=null and pmkys!=''">
+                and pmky like concat('%',#{pmkys},'%') and systp=0
+            </if>
+
+        </where>
+    </select>
+    <insert id="insert" parameterType="com.ectrip.model.Sysparv5">
+    insert into sysparv5 (pmky, pmcd, spmcd,
+      systp, pmva, pmvb,
+      pmvc, pmvd, pmve, pmvf,
+      isa, isb, isc, isd,
+      ise, isf, isvalue,
+      note, dtmakedate
+      )
+    values (#{pmky,jdbcType=VARCHAR}, #{pmcd,jdbcType=VARCHAR}, #{spmcd,jdbcType=VARCHAR},
+      #{systp,jdbcType=VARCHAR}, #{pmva,jdbcType=VARCHAR}, #{pmvb,jdbcType=VARCHAR},
+      #{pmvc,jdbcType=VARCHAR}, #{pmvd,jdbcType=VARCHAR}, #{pmve,jdbcType=VARCHAR}, #{pmvf,jdbcType=VARCHAR},
+      #{isa,jdbcType=INTEGER}, #{isb,jdbcType=INTEGER}, #{isc,jdbcType=INTEGER}, #{isd,jdbcType=INTEGER},
+      #{ise,jdbcType=INTEGER}, #{isf,jdbcType=INTEGER}, #{isvalue,jdbcType=INTEGER},
+      #{note,jdbcType=VARCHAR}, #{dtmakedate,jdbcType=VARCHAR}
+      )
+  </insert>
+
+    <insert id="insertSelective" parameterType="com.ectrip.model.Sysparv5" useGeneratedKeys="true">
+        insert into sysparv5
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pmky != null">
+                pmky,
+            </if>
+            <if test="pmcd != null">
+                pmcd,
+            </if>
+            <if test="spmcd != null">
+                spmcd,
+            </if>
+            <if test="systp != null">
+                systp,
+            </if>
+            <if test="pmva != null">
+                pmva,
+            </if>
+            <if test="pmvb != null">
+                pmvb,
+            </if>
+            <if test="pmvc != null">
+                pmvc,
+            </if>
+            <if test="pmvd != null">
+                pmvd,
+            </if>
+            <if test="pmve != null">
+                pmve,
+            </if>
+            <if test="pmvf != null">
+                pmvf,
+            </if>
+            <if test="isa != null">
+                isa,
+            </if>
+            <if test="isb != null">
+                isb,
+            </if>
+            <if test="isc != null">
+                isc,
+            </if>
+            <if test="isd != null">
+                isd,
+            </if>
+            <if test="ise != null">
+                ise,
+            </if>
+            <if test="isf != null">
+                isf,
+            </if>
+            <if test="isvalue != null">
+                isvalue,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+            <if test="dtmakedate != null">
+                dtmakedate,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pmky != null">
+                #{pmky,jdbcType=VARCHAR},
+            </if>
+            <if test="pmcd != null">
+                #{pmcd,jdbcType=VARCHAR},
+            </if>
+            <if test="spmcd != null">
+                #{spmcd,jdbcType=VARCHAR},
+            </if>
+            <if test="systp != null">
+                #{systp,jdbcType=VARCHAR},
+            </if>
+            <if test="pmva != null">
+                #{pmva,jdbcType=VARCHAR},
+            </if>
+            <if test="pmvb != null">
+                #{pmvb,jdbcType=VARCHAR},
+            </if>
+            <if test="pmvc != null">
+                #{pmvc,jdbcType=VARCHAR},
+            </if>
+            <if test="pmvd != null">
+                #{pmvd,jdbcType=VARCHAR},
+            </if>
+            <if test="pmve != null">
+                #{pmve,jdbcType=VARCHAR},
+            </if>
+            <if test="pmvf != null">
+                #{pmvf,jdbcType=VARCHAR},
+            </if>
+            <if test="isa != null">
+                #{isa,jdbcType=INTEGER},
+            </if>
+            <if test="isb != null">
+                #{isb,jdbcType=INTEGER},
+            </if>
+            <if test="isc != null">
+                #{isc,jdbcType=INTEGER},
+            </if>
+            <if test="isd != null">
+                #{isd,jdbcType=INTEGER},
+            </if>
+            <if test="ise != null">
+                #{ise,jdbcType=INTEGER},
+            </if>
+            <if test="isf != null">
+                #{isf,jdbcType=INTEGER},
+            </if>
+            <if test="isvalue != null">
+                #{isvalue,jdbcType=INTEGER},
+            </if>
+            <if test="note != null">
+                #{note,jdbcType=VARCHAR},
+            </if>
+            <if test="dtmakedate != null">
+                #{dtmakedate,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="editSysparv5" parameterType="com.ectrip.model.Sysparv5">
+        UPDATE sysparv5
+        <trim prefix = "set" suffixOverrides = ",">
+            <if test = "spmcd != null">spmcd = #{spmcd},</if>
+            <if test="systp != null">systp=#{systp},</if>
+            <if test="pmva != null">pmva=#{pmva},</if>
+            <if test="pmvb != null">pmvb=#{pmvb},</if>
+            <if test = "pmvc != null">pmvc = #{pmvc},</if>
+            <if test = "pmvd != null">pmvd = #{pmvd},</if>
+            <if test = "pmve != null">pmve = #{pmve},</if>
+            <if test = "pmvf != null">pmvf = #{pmvf},</if>
+            <if test = "isa != null">isa = #{isa},</if>
+            <if test = "isb != null">isb = #{isb},</if>
+            <if test = "isc != null">isc = #{isc},</if>
+            <if test = "isd != null">isd = #{isd},</if>
+            <if test = "ise != null">ise = #{ise},</if>
+            <if test = "isf != null">isf = #{isf},</if>
+            <if test = "isvalue != null">isvalue = #{isvalue},</if>
+            <if test = "note != null ">note = #{note},</if>
+            <if test = "dtmakedate != null">dtmakedate = #{dtmakedate},</if>
+        </trim>
+        WHERE pmky =#{pmky} and pmcd=#{pmcd}
+    </update>
+    <delete id="delSysparv5"  parameterType="com.ectrip.model.Sysparv5">
+    delete from sysparv5 where pmky=#{pmky}
+  </delete>
+
+    <select id="getSysparv5" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from sysparv5 where pmky=#{pmky} and pmcd=#{pmcd}
+    </select>
+
+    <select id="getSysList" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from sysparv5 where pmky=#{pmky} and pmcd!='****' and isvalue=1
+    </select>
+
+    <select id="getSystpList" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select pmky from sysparv5 where systp=#{systp}
+    </select>
+
+    <select id="getPmkyList" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select pmcd from sysparv5 where pmky=#{pmky}
+    </select>
+</mapper>

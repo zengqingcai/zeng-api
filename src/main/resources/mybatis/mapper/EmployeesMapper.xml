@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ectrip.mapper.EmployeesMapper" >
+  <resultMap id="BaseResultMap" type="com.ectrip.model.Employees" >
+    <result column="employeeid" property="employeeid" jdbcType="INTEGER" />
+    <result column="empid" property="empid" jdbcType="VARCHAR" />
+    <result column="sempid" property="sempid" jdbcType="VARCHAR" />
+    <result column="empname" property="empname" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="ztimes" property="ztimes" jdbcType="INTEGER" />
+    <result column="emptype" property="emptype" jdbcType="INTEGER" />
+    <result column="icompanyinfoid" property="icompanyinfoid" jdbcType="INTEGER" />
+    <result column="companycode" property="companycode" jdbcType="VARCHAR" />
+    <result column="companyname" property="companyname" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="addr" property="addr" jdbcType="VARCHAR" />
+    <result column="byisuse" property="byisuse" jdbcType="INTEGER" />
+    <result column="shempid" property="shempid" jdbcType="INTEGER" />
+    <result column="shbyisuse" property="shbyisuse" jdbcType="INTEGER" />
+    <result column="shnote" property="shnote" jdbcType="VARCHAR" />
+    <result column="sources" property="sources" jdbcType="VARCHAR" />
+    <result column="sznote" property="sznote" jdbcType="VARCHAR" />
+    <result column="dtmakedate" property="dtmakedate" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    employeeid, sempid, empid,
+      empname, password, ztimes,
+      emptype, icompanyinfoid, companycode,
+      companyname, mobile, email,
+      addr, byisuse, shempid,
+      shbyisuse, shnote, sources,
+      sznote, dtmakedate
+  </sql>
+
+  <insert id="insert" parameterType="com.ectrip.model.Employees" useGeneratedKeys="true" keyProperty="employeeid">
+    insert into employees (employeeid,sempid, empid,
+      empname, password, ztimes, 
+      emptype, icompanyinfoid, companycode, 
+      companyname, mobile, email, 
+      addr, byisuse, shempid, 
+      shbyisuse, shnote, sources, 
+      sznote, dtmakedate)
+    values (#{employeeid,jdbcType=INTEGER},#{sempid,jdbcType=VARCHAR}, #{empid,jdbcType=VARCHAR},
+      #{empname,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{ztimes,jdbcType=INTEGER}, 
+      #{emptype,jdbcType=INTEGER}, #{icompanyinfoid,jdbcType=INTEGER}, #{companycode,jdbcType=VARCHAR}, 
+      #{companyname,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{addr,jdbcType=VARCHAR}, #{byisuse,jdbcType=INTEGER}, #{shempid,jdbcType=INTEGER}, 
+      #{shbyisuse,jdbcType=INTEGER}, #{shnote,jdbcType=VARCHAR}, #{sources,jdbcType=VARCHAR}, 
+      #{sznote,jdbcType=VARCHAR}, #{dtmakedate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ectrip.model.Employees" useGeneratedKeys="true" keyProperty="employeeid">
+    insert into employees
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="employeeid != null" >
+        employeeid,
+      </if>
+      <if test="sempid != null" >
+        sempid,
+      </if>
+      <if test="empid != null" >
+        empid,
+      </if>
+      <if test="empname != null" >
+        empname,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="ztimes != null" >
+        ztimes,
+      </if>
+      <if test="emptype != null" >
+        emptype,
+      </if>
+      <if test="icompanyinfoid != null" >
+        icompanyinfoid,
+      </if>
+      <if test="companycode != null" >
+        companycode,
+      </if>
+      <if test="companyname != null" >
+        companyname,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="addr != null" >
+        addr,
+      </if>
+      <if test="byisuse != null" >
+        byisuse,
+      </if>
+      <if test="shempid != null" >
+        shempid,
+      </if>
+      <if test="shbyisuse != null" >
+        shbyisuse,
+      </if>
+      <if test="shnote != null" >
+        shnote,
+      </if>
+      <if test="sources != null" >
+        sources,
+      </if>
+      <if test="sznote != null" >
+        sznote,
+      </if>
+      <if test="dtmakedate != null" >
+        dtmakedate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="employeeid != null" >
+        #{employeeid,jdbcType=INTEGER},
+      </if>
+      <if test="sempid != null" >
+        #{sempid,jdbcType=VARCHAR},
+      </if>
+      <if test="empid != null" >
+        #{empid,jdbcType=VARCHAR},
+      </if>
+      <if test="empname != null" >
+        #{empname,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="ztimes != null" >
+        #{ztimes,jdbcType=INTEGER},
+      </if>
+      <if test="emptype != null" >
+        #{emptype,jdbcType=INTEGER},
+      </if>
+      <if test="icompanyinfoid != null" >
+        #{icompanyinfoid,jdbcType=INTEGER},
+      </if>
+      <if test="companycode != null" >
+        #{companycode,jdbcType=VARCHAR},
+      </if>
+      <if test="companyname != null" >
+        #{companyname,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null" >
+        #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="byisuse != null" >
+        #{byisuse,jdbcType=INTEGER},
+      </if>
+      <if test="shempid != null" >
+        #{shempid,jdbcType=INTEGER},
+      </if>
+      <if test="shbyisuse != null" >
+        #{shbyisuse,jdbcType=INTEGER},
+      </if>
+      <if test="shnote != null" >
+        #{shnote,jdbcType=VARCHAR},
+      </if>
+      <if test="sources != null" >
+        #{sources,jdbcType=VARCHAR},
+      </if>
+      <if test="sznote != null" >
+        #{sznote,jdbcType=VARCHAR},
+      </if>
+      <if test="dtmakedate != null" >
+        #{dtmakedate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="getEmployees" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List"/>
+    from employees where employeeid=#{employeeid}
+  </select>
+
+  <select id="getEmployeesByPage" resultMap="BaseResultMap" parameterType="com.ectrip.model.Employees">
+    select
+    <include refid="Base_Column_List"/> from employees
+    <where>
+      <if test="byisuse != null and byisuse!=99">
+        AND byisuse=#{byisuse}
+      </if>
+      <if test="emptype != null and emptype!=99">
+        AND emptype=#{emptype}
+      </if>
+      <if test="sources != null and sources!=''">
+        AND sources=#{sources}
+      </if>
+    </where>
+    ORDER BY employeeid DESC
+  </select>
+
+  <update id="editEmployees" parameterType="com.ectrip.model.Employees">
+    update employees set
+      empname= #{empname},
+      password= #{password},
+      ztimes= #{ztimes},
+      mobile= #{mobile},
+      email= #{email},
+      addr= #{addr},
+      byisuse= #{byisuse},
+      shempid= #{shempid},
+      shbyisuse= #{shbyisuse},
+      shnote= #{shnote},
+      sznote= #{sznote},
+      dtmakedate= #{dtmakedate}
+      where employeeid=#{employeeid}
+  </update>
+
+  <!-- add -->
+  <update id="updateSelective"  parameterType="com.ectrip.model.Employees">
+    UPDATE employees
+    <trim prefix="set" suffixOverrides=",">
+      <if test="empname!=null and empname != ''">empname= #{empname},</if>
+      <if test="password!=null and password !=''">password= #{password},</if>
+      <if test="ztimes!=null">ztimes= #{ztimes},</if>
+      <if test="emptype!=null">emptype= #{emptype},</if>
+      <if test="icompanyinfoid!=null">icompanyinfoid= #{icompanyinfoid},</if>
+      <if test="companycode!=null and companycode !=''">companycode= #{companycode},</if>
+      <if test="companyname!=null and companyname !=''">companyname= #{companyname},</if>
+      <if test="mobile!=null and mobile !=''">mobile= #{mobile},</if>
+      <if test="email!=null and email !=''">email= #{email},</if>
+      <if test="addr!=null and addr !=''">addr= #{addr},</if>
+      <if test="byisuse!=null">byisuse= #{byisuse},</if>
+      <if test="shempid!=null">shempid= #{shempid},</if>
+      <if test="shbyisuse!=null">shbyisuse= #{shbyisuse},</if>
+      <if test="shnote!=null and shnote!=''">shnote= #{shnote},</if>
+      <if test="sources!=null and sources!=''">sources= #{sources},</if>
+      <if test="sznote!=null and sznote!=''">sznote= #{sznote},</if>
+      <if test="dtmakedate!=null and dtmakedate !=''">dtmakedate= #{dtmakedate}</if>
+    </trim>
+    where employeeid=#{employeeid}
+  </update>
+
+  <delete id="delEmployees"  parameterType="java.lang.Integer">
+    delete from employees where employeeid=#{employeeid}
+  </delete>
+
+  <select id="getEmployeesByEmpId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List"/>
+    from employees where empid=#{empid}
+  </select>
+
+  <select id="getByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select
+    <include refid="Base_Column_List"/>
+    from employees
+    where 1=1
+    <if test="sources!=null and sources!=''">
+      and sources=#{sources}
+    </if>
+    <if test="companycode!=null and companycode!=''">
+      and companycode=#{companycode}
+    </if>
+  </select>
+
+  <select id="getIcompanyinfoid" resultType="java.lang.Integer">
+  select nextval('icompanyinfoid');
+  </select>
+
+  <select id="getEmpBySource" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+      FROM employees WHERE employeeid IN(
+                SELECT employeeid
+                FROM emppush
+                WHERE pushstatus=0 AND byisuse = #{byisuse} AND source=#{source}
+    )
+  </select>
+
+    <select id="getCompanyCodeByName" parameterType="java.lang.String" resultType="java.lang.String">
+        select companycode from employees where companyname=#{companyname}
+    </select>
+
+    <select id="getEmpBySourceTwo" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM employees WHERE employeeid IN(
+        SELECT employeeid
+        FROM emppush
+        WHERE pushstatus=0 AND byisuse = #{byisuse} AND source=#{source}
+        ) AND shbyisuse=2
+    </select>
+
+  <!-- 查询父级用户 -->
+  <select id="getSupEmpByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select
+    <include refid="Base_Column_List"/>
+    from employees
+    where 1=1 AND sempid IS NULL
+    <if test="empid != null and empid!=''">
+      and empid=#{empid}
+    </if>
+    <if test="byisuse != null">
+      and byisuse=#{byisuse}
+    </if>
+  </select>
+</mapper>

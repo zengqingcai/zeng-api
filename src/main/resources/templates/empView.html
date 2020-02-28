@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>用户详情</title>
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+
+    <style type="text/css">
+        /*--S--时间段的选择样式*/
+        .form-group .label, .btns {
+            cursor: pointer;
+        }
+
+        /*--E--时间段的选择样式*/
+
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .label-list .label {
+            font-size: 125%;
+        }
+
+        .whiteSpace {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .wordBreak {
+            word-break: break-all;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        /*--E--文本详情的样式*/
+
+    </style>
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+    <script type="text/javascript">
+    function showALLEmpList(){
+    window.location.href = "/emp/empList";
+    }
+    function empEdit(empid){
+        window.location.href = "/emp/empEdit/"+empid;
+    }
+    function empUpdate() {
+        var employeeid=$('#employeeid').val();
+        var empname=$('#empname').val();
+        var email=$('#email').val();
+        var mobile=$('#mobile').val();
+        var byisuse = $('input[name="byisuse"]:checked').val();
+        var sznote=$('#sznote').val();
+        $.ajax({
+            url:"/emp/empUpdate",
+            type:'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data:JSON.stringify({"employeeid":employeeid,"empname":empname,"mobile":mobile,"email":email,"byisuse":byisuse,"sznote":sznote}),
+            async: true,
+            success:function(data){
+                console.log(data);
+                if(data.success==true){
+                    alert(data.description+",返回查看页面");
+                    window.location.href = "/emp/empView/"+employeeid;
+                }else{
+                    alert("用户修改保存失败,原因:["+data.description+"]");
+                }
+            },
+            error:function () {
+            }
+        });
+    }
+
+    function empAudit(auditType) {
+        var employeeid=$('#employeeid').val();
+        var shnote=$('#shnote').val();
+        var ids = [];
+        var sourcenames;
+        $("input[name='system']:checked").each(function(i){
+            ids.push($(this).val())
+        });
+        if(shnote==null||shnote==''||shnote==undefined){
+            alert("审核说明不能为空.")
+            return false;
+        }
+        if((ids.length==0)&&auditType==true){
+            alert("至少选择一种系统.")
+            return false;
+        }else{
+            sourcenames=ids.join(",");
+        }
+        $.ajax({
+            url:"/empApi/reviewEmp",
+            type:"post",
+            dataType:"json",
+            contentType :"application/json",
+            data: JSON.stringify({"employeeid":employeeid,"shnote":shnote,"sourcenames":sourcenames,"auditType":auditType}),
+            success:function(data){
+                if(data.success==true){
+                    alert(data.description);
+                    window.location.href = "/emp/empList";
+                }else{
+                    alert("保存失败,原因:["+data.description+"]");
+                }
+            },
+            error:function () {
+            }
+        });
+    }
+    </script>
+</head>
+<body>
+<table id="emptable" class="table stripe table-bordered table-hover">
+    <tr>
+        <th colspan="2">
+            <p th:text="'用户:'+${Employees.empname}"></p>
+        </th>
+    </tr>
+    <tr>
+        <input type="hidden" id="employeeid" th:value="${Employees.employeeid}">
+        <th>用户ID</th>
+        <th>
+            <p th:text="${Employees.employeeid}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>上级用户账号</th>
+        <th>
+            <p th:text="${Employees.sempid}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>用户名</th>
+        <th>
+            <p th:text="${Employees.empid}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>用户姓名</th>
+        <th th:if="${status ne 'edit'}">
+            <p th:text="${Employees.empname}"></p>
+        </th>
+        <th th:if="${status eq 'edit'}">
+            <input id="empname" type="text" th:value="${Employees.empname}"/>
+        </th>
+    </tr>
+    <tr>
+        <th>用户类型</th>
+        <th>
+            <p th:if="${Employees.emptype eq 0}" >平台用户</p>
+            <p th:if="${Employees.emptype eq 1}" >景区用户</p>
+            <p th:if="${Employees.emptype eq 2}" >供应商</p>
+            <p th:if="${Employees.emptype eq 3}" >分销商</p>
+        </th>
+    </tr>
+    <tr>
+        <th>企业ID</th>
+        <th>
+            <p th:text="${Employees.icompanyinfoid}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>企业编号</th>
+        <th>
+            <p th:text="${Employees.companycode}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>企业名称</th>
+        <th>
+            <p th:text="${Employees.companyname}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>企业地址</th>
+        <th>
+            <p th:text="${Employees.addr}"></p>
+        </th>
+    </tr>
+    <tr>
+        <th>联系方式</th>
+        <th th:if="${status ne 'edit'}">
+            <p th:text="${Employees.mobile}"></p>
+        </th>
+
+        <th th:if="${status eq 'edit'}">
+            <input id="mobile" type="text" th:value="${Employees.mobile}"/>
+        </th>
+    </tr>
+    <tr>
+        <th>邮箱地址</th>
+        <th th:if="${status ne 'edit'}">
+            <P th:text="${Employees.email}"></P>
+        </th>
+        <th th:if="${status eq 'edit'}">
+            <input id="email" type="text" th:value="${Employees.email}"/>
+        </th>
+    </tr>
+    <tr>
+        <td>用户状态</td>
+
+        <th th:if="${status ne 'edit'}">
+            <p th:if="${Employees.byisuse eq 0}" ><span style="color:red">禁用</span></p>
+            <p th:if="${Employees.byisuse eq 1}" ><span style="color:green">启用</span></p>
+            <p th:if="${Employees.byisuse eq 2}" ><span style="color:black">黑名单</span></p>
+            <p th:if="${Employees.byisuse eq 3}" ><span style="color:gray">需审核</span></p>
+        </th>
+
+        <th th:if="${status eq 'edit'}">
+            <div id="byisuse">
+                <label><input type="radio" value="0" name="byisuse" th:field="*{Employees.byisuse}"/><span style="color:red">禁用</span></label>
+                <label><input type="radio" value="1" name="byisuse" th:field="*{Employees.byisuse}"/><span style="color:green">启用</span></label>
+            </div>
+        </th>
+    </tr>
+    <tr>
+        <th>注册来源</th>
+        <th>
+            <p th:if="${Employees.sources eq '0'}" >集成用户</p>
+            <p th:if="${Employees.sources eq '1'}" >SAAS</p>
+            <p th:if="${Employees.sources eq '2'}" >支付桥</p>
+            <p th:if="${Employees.sources eq '3'}" >整合营销</p>
+        </th>
+    </tr>
+    <tr>
+        <th>备注</th>
+        <th th:if="${status ne 'edit'}">
+            <textarea th:text="${Employees.sznote}" style="width:300px;height:150px;" readonly="readonly"/>
+        </th>
+        <th th:if="${status eq 'edit'}">
+            <textarea th:text="${Employees.sznote}" id="sznote" style="width:300px;height:150px;" />
+        </th>
+    </tr>
+    <tr th:if="${(status != 'audit') and (Employees.sources == '0')}">
+        <th>审核人</th>
+        <th>
+            <p th:text="${shEmpName}"></p>
+        </th>
+    </tr>
+    <tr th:if="${(status != 'audit') and (Employees.sources == '0')}">
+        <th>审核状态</th>
+        <th>
+            <p th:if="${Employees.shbyisuse eq 0}" ><span style="color:gray">待审核</span></p>
+            <p th:if="${Employees.shbyisuse eq 1}" ><span style="color:green">审核通过</span></p>
+            <p th:if="${Employees.shbyisuse eq 2}" ><span style="color:red">审核不通过</span></p>
+        </th>
+    </tr>
+    <tr th:if="${Employees.sources == '0'}">
+        <th>审核内容</th>
+        <th th:if="${status ne 'audit'}">
+            <textarea th:text="${Employees.shnote}" style="width:300px;height:150px;" readonly="readonly"/>
+        </th>
+        <th th:if="${status eq 'audit'}">
+            <textarea th:text="${Employees.shnote}" id="shnote" style="width:300px;height:150px;" />
+        </th>
+    </tr>
+    <tr th:if="${(Employees.sources == '0') and (status == 'audit')}">
+        <th>选择系统</th>
+        <th>
+            <label th:each="sysparv5:${systemList}" class="check-box">
+                <input name="system" type="checkbox" th:value="${sysparv5.pmcd}" th:text="${sysparv5.pmva}">
+            </label>
+        </th>
+    </tr>
+    <tr>
+        <th>操作</th>
+        <th th:if="${status eq 'view'}">
+            <p>
+                <label th:if="${(Employees.byisuse!=2) and (Employees.byisuse!=3)}"><input value="修改" type="button" class="btn btn-success" th:onclick="|empEdit(${Employees.employeeid})|"/>  |  </label><input value="返回列表" type="button" class="btn btn-success" th:onclick="|showALLEmpList()|"/>
+            </p>
+        </th>
+
+        <th th:if="${status eq 'edit'}">
+            <p>
+                <input value="保存修改" type="button" class="btn btn-success" th:onclick="|empUpdate()|"/>  |  <input value="返回列表" type="button" class="btn btn-success" th:onclick="|showALLEmpList()|"/>
+            </p>
+        </th>
+
+        <th th:if="${status eq 'audit'}">
+            <p>
+                <input value="审核通过" type="button" class="btn btn-success" th:onclick="|empAudit(true)|"/>  |  <input value="审核不通过" type="button" class="btn btn-success" th:onclick="|empAudit(false)|"/>  |  <input value="返回列表" type="button" class="btn btn-success" th:onclick="|showALLEmpList()|"/>
+            </p>
+        </th>
+    </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户通用系统</title>
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+    <style type="text/css">
+        /*--S--时间段的选择样式*/
+        .form-group .label, .btns {
+            cursor: pointer;
+        }
+        /*--E--时间段的选择样式*/
+
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .label-list .label {
+            font-size: 125%;
+        }
+
+        .whiteSpace {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .wordBreak {
+            word-break: break-all;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        /*--E--文本详情的样式*/
+
+
+    </style>
+
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+    <script type="text/javascript">
+        function showALLEmpList(){
+            window.location.href = "/emp/empList";
+        }
+
+        var ids = [];
+        var sourcenames;
+        $("input[name='sourcenames']:checked").each(function(i){
+            ids.push($(this).val())
+        });
+        if(ids.length>0){
+            sourcenames=ids.join(",");
+        }else{
+            sourcenames="";
+        }
+        
+        function test() {
+            var arr=[];
+            $("#sourcenames input[type='radio']").each(
+                function () {
+                    if(arr.indexOf($(this).attr("name"))>-1) {
+                    }else{
+                        arr.push($(this).attr("name"));
+                    }
+                }
+            );
+            var list=[];
+            for(j = 0,len=arr.length; j < len; j++){
+                var map={};
+                var byisuse = $('input[name="'+arr[j]+'"]:checked').val();
+                map.name=arr[j];
+                map.value=byisuse;
+                list.push(map);
+            }
+            console.log(list);
+            var employeeid=$('#employeeid').val();
+            $.ajax({
+                url:"/emp/saveResource",
+                type:'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data:JSON.stringify({
+                    "employeeid":employeeid,
+                    "resources":list
+                    }
+                ),
+                async: true,
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert(data.description);
+                    }else{
+                        alert(data.description);
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<table id="emptable" class="table stripe table-bordered table-hover">
+    <h><p th:text="'用户:'+${Employees.empname}"></p></h>
+    <tr>
+        <input type="hidden" id="employeeid" th:value="${Employees.employeeid}">
+        <td class="title">用户ID</td>
+        <td th:text="${Employees.employeeid}"></td>
+    </tr>
+    <tr>
+        <td class="title">用户名</td>
+        <td th:text="${Employees.empid}"></td>
+    </tr>
+    <tr>
+        <td class="title">系统</td>
+        <td id="sourcenames">
+<!--            <div th:each="rsourcestab:${sourcenameList}">
+                <input type="checkbox" name="sourcenames"
+                       th:value="${rsourcestab.sourcename}"
+                       th:attr ="checked=${rsourcestab.byisuse==1?true:false}"/>
+                <a th:text="${rsourcestab.szsourcename}"/>
+            </div>-->
+            <div th:each="rsourcestab:${sourcenameList}">
+                <span th:text="${rsourcestab.szsourcename}"/>
+                <input type="radio" th:attr ="name=${rsourcestab.sourcename}" th:checked="${rsourcestab.byisuse==0?true:false}" value="0">禁用
+                <input type="radio" th:attr ="name=${rsourcestab.sourcename}" th:checked="${rsourcestab.byisuse==1?true:false}" value="1">启用
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="title">操作</td>
+        <td>
+            <p>
+                <input value="保存修改" type="button" class="btn btn-success" th:onclick="|test()|"/>  |  <input value="返回列表" type="button" class="btn btn-success" th:onclick="|showALLEmpList()|"/>
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

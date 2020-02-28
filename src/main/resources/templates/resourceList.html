@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户系统通用表</title>
+    <!--引入css-->
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/dataTables/dataTables.bootstrap.css"/>
+    <link rel="stylesheet" href="/css/datepicker/bootstrap-datetimepicker.css"/>
+    <link rel="stylesheet" href="/css/sweetalert/sweetalert2.min.css"/>
+    <style type="text/css">
+        /*--S--时间段的选择样式*/
+        .form-group .label, .btns {
+            cursor: pointer;
+        }
+        /*--E--时间段的选择样式*/
+
+        .main {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 1200px;
+            padding: 20px;
+        }
+
+        .label-list .label {
+            font-size: 125%;
+        }
+
+        .whiteSpace {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .wordBreak {
+            word-break: break-all;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        /*--E--文本详情的样式*/
+
+
+    </style>
+
+    <!-- 引入js -->
+    <script type="text/javascript" src="/js/moment/moment.min.js"></script>
+    <script type="text/javascript" src="/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.js"></script>
+    <script type="text/javascript" src="/js/datepicker/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="/js/dataTables/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="/js/dataTables/dataTables.bootstrap.js"></script>
+    <script type="text/javascript" src="/js/sweetalert/sweetalert2.min.js"></script>
+    <script type="text/javascript">
+        function addClick() {
+            var _minWidth = $(window).width() * 0.6 //0.6为常量
+            $('.text-para').each(function () {
+                var _this = $(this)
+                var _lH = parseInt(_this.css('line-height'))
+                _this.parent().css({"height": _lH + "px", "width": _minWidth + "px"})
+                var str = _this.text()  //文本内容
+                var _lW = this.scrollWidth / str.length //获取字体宽度
+                var _num = Math.floor(_minWidth / _lW) //一排显示的文字数量
+
+                //文本的数量和默认一行能显示多个字符相比较
+                if (str.length > _num) {
+                    var _width = _minWidth - 100 // 100px为 [展开收起图标]的大小
+                    var _count = Math.floor(_width / _lW)
+                    _this.text(str.substring(0, _count)) //截取显示少量内容
+                    _this.css("width", _width + "px")
+
+                    //添加点击[展开]的事件
+                    var _span = _this.nextAll()
+                    _span.eq(0).click(function () {
+                        _this.parent().css({"height": _lH * Math.ceil(str.length / _count) + "px"})
+                        _this.text(str)
+                        _this.addClass("wordBreak")
+                        _this.removeClass("whiteSpace")
+
+                        $(this).addClass("hidden");
+                        $(this).next().removeClass("hidden");
+                    })
+
+                    //添加点击[收起]的事件
+                    _span.eq(1).click(function () {
+                        _this.parent().css({"height": _lH + "px"})
+                        _this.text(str.substring(0, _count))
+                        _this.removeClass("wordBreak")
+                        _this.addClass("whiteSpace")
+
+                        $(this).addClass("hidden");
+                        $(this).prev().removeClass("hidden");
+                    })
+                } else {
+                    _this.next().addClass("hidden");
+                }
+
+            })
+        }
+
+        $(function () {
+            <!-- DataTable 初始化 -->
+            $("#emptable").DataTable({
+                lengthChange: true,
+                paging: true,
+                language: {
+                    lengthMenu: "每页显示 _MENU_记录",
+                    zeroRecords: "没有匹配的数据",
+                    info: "第_PAGE_页/共 _PAGES_页 ( 共\_TOTAL\_条记录 )",
+                    infoEmpty: "没有符合条件的记录",
+                    infoFiltered: "(从 _MAX_条记录中过滤)",
+                    paginate: {"first": "首页 ", "last": "末页", "next": "下一页", "previous": "上一页"}
+                },
+                "rowCallback": addClick()
+            })
+
+            $("#startTime").datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                format: 'yyyy-MM-dd hh:mm:ss',
+                forceParse: 0
+            }).on('hide', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                var startTime = event.date;
+                $("#endTime").datetimepicker('setStartDate', startTime);
+                $("#endTime").val("");
+            });
+            $("#endTime").datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                format: 'yyyy-MM-dd hh:mm:ss',
+                forceParse: 0
+            }).on('hide', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                var endTime = event.date;
+                $("#startTime").datetimepicker('setEndDate', endTime);
+            });
+
+
+            //时间范围点击事件
+            $(".form-control-static .label").click(function () {
+                var _beforeTime = JSON.parse($(this).attr("beforeTime"))
+                $("#startTime")[0].value = moment().subtract(_beforeTime.val, _beforeTime.type).format('YYYY-MM-DD HH:mm:ss')
+                $("#endTime")[0].value = moment().format('YYYY-MM-DD HH:mm:ss')
+                $(".form-inline").submit();
+            });
+        });
+
+        function empView(empid){
+            window.location.href = "/emp/empView/"+empid;
+        }
+        function empEdit(empid){
+            window.location.href = "/emp/empEdit/"+empid;
+        }
+        function empAudit(empid){
+            window.location.href = "/emp/empAudit/"+empid;
+        }
+        function empPassWordEdit(empid){
+            window.location.href = "/emp/empPassWordEdit/"+empid;
+        }
+        function empDel(empid) {
+            $.ajax({
+                url:"/emp/empDel",
+                type:'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data:JSON.stringify({"employeeid":empid}),
+                async: true,
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert("用户删除成功");
+                        location.reload();
+                    }else{
+                        alert("用户删除失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+        function blacklist(empid,type) {
+            var url;
+            if(type==1){
+                url="/emp/blackEmp";
+            }else{
+                url="/emp/cancelBlackEmp";
+            }
+            $.ajax({
+                url:url,
+                type:'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data:JSON.stringify({"employeeid":empid}),
+                async: true,
+                success:function(data){
+                    console.log(data);
+                    if(data.success==true){
+                        alert("操作成功");
+                        location.reload();
+                    }else{
+                        alert("操作失败,原因:["+data.description+"]");
+                    }
+                },
+                error:function () {
+                }
+            });
+        }
+
+
+    </script>
+</head>
+<body>
+<div class="main">
+    <p class="panel panel-default">
+        <!-- Default panel contents -->
+    <div class="panel-heading">用户集合
+        <span th:text="${#lists.size(resouces)}" class="badge"></span></div>
+    <table id="emptable" class="table stripe table-bordered table-hover">
+        <thead>
+        <tr>
+            <td hidden>employeeid</td>
+            <th>用户名</th>
+            <th>中文名称</th>
+            <th>可用的系统</th>
+            <th>用户状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="resouce:${resouces}">
+            <td hidden>
+                <p th:text="${resouce.employeeid}"></p>
+            </td>
+            <td>
+                <p th:text="${resouce.empid}"></p>
+            </td>
+            <td>
+                <p th:text="${resouce.empname}"></p>
+            </td>
+            <td>
+                <p th:text="${resouce.sourcename}"></p>
+            </td>
+            <td>
+                <p th:if="${resouce.byisuse eq '0'}" >禁用</p>
+                <p th:if="${resouce.byisuse eq '1'}" >启用</p>
+            </td>
+            <td>
+                <input value="添加系统" type="button" class="btn btn-success"
+                       th:onclick="|empView(${resouce.employeeid})|"/></label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+</html>
